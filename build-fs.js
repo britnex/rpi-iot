@@ -99,9 +99,9 @@ curl -fsSL get.docker.com -o get-docker.sh && sh get-docker.sh
 # disable swap
 dphys-swapfile swapoff
 systemctl disable dphys-swapfile
-DEBIAN_FRONTEND=noninteractive apt-get purge dphys-swapfile
+DEBIAN_FRONTEND=noninteractive apt-get purge -y dphys-swapfile
 
-DEBIAN_FRONTEND=noninteractive apt-get purge logrotate
+DEBIAN_FRONTEND=noninteractive apt-get purge -y logrotate
 
 rm -f $(which rpi-update)
 
