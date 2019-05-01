@@ -119,6 +119,7 @@ sed -i 's/#RuntimeWatchdogSec=0/RuntimeWatchdogSec=14/g' /etc/systemd/system.con
 
 # first boot
 chmod +x /usr/bin/firstboot.sh
+systemctl enable firstboot
 
 # enable fs check on every boot
 touch /forcefsck
