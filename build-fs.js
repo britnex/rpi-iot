@@ -3,6 +3,8 @@
 set -x
 set -e
 
+cur=$(pwd)
+
 mkdir -p /tmp/rpi
 rm -rf /tmp/rpi/*
 
@@ -55,9 +57,9 @@ mount ${LDST}p2 /tmp/rpi/dst/rootfs
 rsync -az -H --delete --numeric-ids /tmp/rpi/src/rootfs/ /tmp/rpi/dst/rootfs/
 
 # copy 
-cp -a etc/* /tmp/rpi/dst/rootfs/etc/
-cp -a lib/* /tmp/rpi/dst/rootfs/lib/
-cp -a usr/* /tmp/rpi/dst/rootfs/usr/
+cp -a ${cur}/etc/* /tmp/rpi/dst/rootfs/etc/
+cp -a ${cur}/lib/* /tmp/rpi/dst/rootfs/lib/
+cp -a ${cur}/usr/* /tmp/rpi/dst/rootfs/usr/
 
 mkdir -p /tmp/rpi/dst/rootfs/boot
 mount ${LDST}p1 /tmp/rpi/dst/rootfs/boot
