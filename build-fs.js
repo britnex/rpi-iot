@@ -54,6 +54,11 @@ mount ${LDST}p2 /tmp/rpi/dst/rootfs
  
 rsync -az -H --delete --numeric-ids /tmp/rpi/src/rootfs/ /tmp/rpi/dst/rootfs/
 
+# copy 
+cp -a etc/* /tmp/rpi/dst/rootfs/etc/
+cp -a lib/* /tmp/rpi/dst/rootfs/lib/
+cp -a usr/* /tmp/rpi/dst/rootfs/usr/
+
 mkdir -p /tmp/rpi/dst/rootfs/boot
 mount ${LDST}p1 /tmp/rpi/dst/rootfs/boot
 
@@ -75,9 +80,6 @@ tmpfs           /var/log        tmpfs   size=40M          0       0
 EOF
 
 
-
-
-
 cp $(which qemu-arm-static) /tmp/rpi/src/rootfs/usr/bin
 
 mount -t proc proc /tmp/rpi/src/rootfs/proc/
@@ -97,9 +99,31 @@ dphys-swapfile swapoff
 systemctl disable dphys-swapfile
 DEBIAN_FRONTEND=noninteractive apt-get purge dphys-swapfile
 
+DEBIAN_FRONTEND=noninteractive apt-get purge logrotate
+
+rm -f $(which rpi-update)
+
 chmod -x /etc/cron.daily/man-db || true
 chmod -x /etc/cron.weekly/man-db || true
 
+# enable readonly filesystem
+chmod +x /etc/initramfs-tools/hooks/overlay
+chmod +x /etc/initramfs-tools/scripts/init-bottom/overlay
+mkinitramfs -o /boot/initramfs.gz
+echo "initramfs initramfs.gz followkernel" >>/boot/config.txt
+# readonly enabled in firstboot.sh
+
+# enable watchdog
+echo "dtparam=watchdog=on" >>/boot/config.txt
+sed -i 's/#RuntimeWatchdogSec=0/RuntimeWatchdogSec=14/g' /etc/systemd/system.conf
+
+# first boot
+chmod +x /usr/bin/firstboot.sh
+
+# enable fs check on every boot
+touch /forcefsck
+
+DEBIAN_FRONTEND=noninteractive apt-get clean
 
 EOF
 chmod +x /tmp/rpi/dst/rootfs/script.sh
