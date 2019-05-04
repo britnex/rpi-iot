@@ -11,7 +11,7 @@ rm -rf /tmp/rpi/*
 cd /tmp/rpi
 
 apt-get update
-DEBIAN_FRONTEND=noninteractive apt-get install -y unzip tar mount dosfstools e2fsprogs qemu-system-arm zip rsync coreutils
+DEBIAN_FRONTEND=noninteractive apt-get install -y unzip tar mount dosfstools e2fsprogs qemu-user-static qemu-system-arm zip rsync coreutils
 
 
 wget https://downloads.raspberrypi.org/raspbian_lite_latest -O raspbian_lite_latest.zip
