@@ -111,8 +111,7 @@ chmod -x /etc/cron.weekly/man-db || true
 # enable readonly filesystem
 chmod +x /etc/initramfs-tools/hooks/overlay
 chmod +x /etc/initramfs-tools/scripts/init-bottom/overlay
-mkinitramfs -o /boot/initramfs.gz
-echo "initramfs initramfs.gz followkernel" >>/boot/config.txt
+
 # readonly enabled in firstboot.sh
 
 # enable watchdog
