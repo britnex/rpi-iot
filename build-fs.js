@@ -70,7 +70,7 @@ cp -a ${cur}/lib/* /tmp/rpi/dst/rootfs/lib/
 cp -a ${cur}/usr/* /tmp/rpi/dst/rootfs/usr/
 
 mkdir -p /tmp/rpi/dst/rootfs/boot/uboot
-mount ${LDST}p1 /tmp/rpi/dst/rootfs/boot
+mount ${LDST}p1 /tmp/rpi/dst/rootfs/boot/uboot
 
 # copy required rpi boot files to /boot/uboot (boot partition)
 cp /tmp/rpi/src/boot/bootcode.bin /tmp/rpi/dst/rootfs/boot/uboot/
