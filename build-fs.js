@@ -93,7 +93,7 @@ EOF
 mkimage -T script -C none -n 'Boot Script' -d /tmp/rpi/uboot.shi.txt /tmp/rpi/dst/rootfs/boot/uboot/uboot.shi
 
 # copy required linux boot files to /boot (on rootfs partition)
-rsync -az -H --delete --numeric-ids /tmp/rpi/src/boot/ /tmp/rpi/dst/rootfs/boot
+rsync -az -H --numeric-ids /tmp/rpi/src/boot/ /tmp/rpi/dst/rootfs/boot
 # remove unused files
 rm -f /tmp/rpi/dst/rootfs/boot/config.txt
 rm -f /tmp/rpi/dst/rootfs/boot/cmdline.txt
