@@ -78,6 +78,7 @@ mount ${LDST}p1 /tmp/rpi/dst/rootfs/boot/uboot
 cp /tmp/rpi/src/boot/*.bin /tmp/rpi/dst/rootfs/boot/uboot/
 cp /tmp/rpi/src/boot/*.elf /tmp/rpi/dst/rootfs/boot/uboot/
 cp /tmp/rpi/src/boot/*.dat /tmp/rpi/dst/rootfs/boot/uboot/
+cp /tmp/rpi/src/boot/*.dtb /tmp/rpi/dst/rootfs/boot/uboot/
 cp /tmp/rpi/src/boot/COPYING.linux /tmp/rpi/dst/rootfs/boot/uboot/
 cp /tmp/rpi/src/boot/LICENCE.broadcom /tmp/rpi/dst/rootfs/boot/uboot/
 cp /tmp/rpi/src/boot/config.txt /tmp/rpi/dst/rootfs/boot/uboot/
@@ -87,8 +88,8 @@ echo "kernel=u-boot.bin" >> /tmp/rpi/dst/rootfs/boot/uboot/config.txt
 cat <<EOF >/tmp/rpi/uboot.shi.txt
 setenv fdtfile /boot/bcm2709-rpi-2-b.dtb
 mmc dev 0
-fatload mmc 0:2 \${kernel_addr_r} /boot/kernel7.img
-fatload mmc 0:2 \${fdt_addr} \${fdtfile}
+ext2load mmc 0:2 \${kernel_addr_r} /boot/kernel7.img
+ext2load mmc 0:2 \${fdt_addr} \${fdtfile}
 setenv bootargs earlyprintk console=tty0 console=ttyAMA0 root=/dev/mmcblk0p2 rootfstype=ext4 rootwait noinitrd
 bootz \${kernel_addr_r} - \${fdt_addr}
 EOF
