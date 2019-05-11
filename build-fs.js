@@ -113,8 +113,8 @@ echo "dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elev
 cat <<EOF >/tmp/rpi/dst/rootfs/etc/fstab
 proc            /proc           proc    defaults          0       0
 /dev/mmcblk0p1  /boot/uboot     vfat    defaults          0       2
-/dev/mmcblk0p2  /               ext4    defaults,noatime,data=journal  0       1
-/dev/mmcblk0p4  /data           ext4    defaults,noatime,data=journal  0       1
+/dev/mmcblk0p2  /               ext4    defaults,noatime  0       1
+/dev/mmcblk0p4  /data           ext4    defaults,noatime  0       1
 tmpfs           /tmp            tmpfs   size=20M          0       0
 tmpfs           /var/tmp        tmpfs   size=20M          0       0
 tmpfs           /var/log        tmpfs   size=40M          0       0
