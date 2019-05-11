@@ -90,7 +90,7 @@ setenv fdtfile /boot/bcm2709-rpi-2-b.dtb
 mmc dev 0
 ext2load mmc 0:2 \${kernel_addr_r} /boot/kernel7.img
 ext2load mmc 0:2 \${fdt_addr} \${fdtfile}
-setenv bootargs earlyprintk console=tty0 root=/dev/mmcblk0p2 rootfstype=ext4 rootwait dwc_otg.lpm_enable=0 fsck.repair=yes noinitrd
+setenv bootargs earlyprintk console=tty0 root=/dev/mmcblk0p2 rootfstype=ext4 rootwait dwc_otg.lpm_enable=0 fsck.repair=yes fsck.mode=force noinitrd
 bootz \${kernel_addr_r} - \${fdt_addr}
 EOF
 # convert to uboot script format
@@ -160,9 +160,6 @@ sed -i 's/#RuntimeWatchdogSec=0/RuntimeWatchdogSec=14/g' /etc/systemd/system.con
 # first boot
 chmod +x /usr/bin/firstboot.sh
 systemctl enable firstboot
-
-# enable fs check on every boot
-touch /forcefsck
 
 DEBIAN_FRONTEND=noninteractive apt-get clean
 
