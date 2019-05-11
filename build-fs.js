@@ -11,8 +11,16 @@ rm -rf /tmp/rpi/*
 cd /tmp/rpi
 
 apt-get update
-DEBIAN_FRONTEND=noninteractive apt-get install -y unzip tar mount dosfstools e2fsprogs qemu-user-static qemu-system-arm zip rsync coreutils
+DEBIAN_FRONTEND=noninteractive apt-get install -y bison bc flex build-essential git gcc-arm-linux-gnueabi unzip tar mount dosfstools e2fsprogs qemu-user-static qemu-system-arm zip rsync coreutils 
+export ARCH=arm
+export CROSS_COMPILE=arm-linux-gnueabi-
 
+git clone git://git.denx.de/u-boot.git
+pushd u-boot
+make rpi_2_defconfig
+make u-boot.bin
+UBOOTBIN=$(pwd)/u-boot.bin
+popd
 
 wget https://downloads.raspberrypi.org/raspbian_lite_latest -O raspbian_lite_latest.zip
 unzip raspbian_lite_latest.zip
@@ -61,10 +69,24 @@ cp -a ${cur}/etc/* /tmp/rpi/dst/rootfs/etc/
 cp -a ${cur}/lib/* /tmp/rpi/dst/rootfs/lib/
 cp -a ${cur}/usr/* /tmp/rpi/dst/rootfs/usr/
 
-mkdir -p /tmp/rpi/dst/rootfs/boot
+mkdir -p /tmp/rpi/dst/rootfs/boot/uboot
 mount ${LDST}p1 /tmp/rpi/dst/rootfs/boot
 
+# copy required rpi boot files to /boot/uboot (boot partition)
+cp /tmp/rpi/src/boot/bootcode.bin /tmp/rpi/dst/rootfs/boot/uboot/
+cp /tmp/rpi/src/boot/start.elf /tmp/rpi/dst/rootfs/boot/uboot/
+cp /tmp/rpi/src/boot/config.txt /tmp/rpi/dst/rootfs/boot/uboot/
+cp ${UBOOTBIN} /tmp/rpi/dst/rootfs/uboot/boot/
+echo "kernel=u-boot.bin" >> /tmp/rpi/dst/rootfs/boot/uboot/config.txt
+
+# copy required linux boot files to /boot (on rootfs partition)
 rsync -az -H --delete --numeric-ids /tmp/rpi/src/boot/ /tmp/rpi/dst/rootfs/boot
+# remove unused files
+rm -f /tmp/rpi/dst/rootfs/boot/config.txt
+rm -f /tmp/rpi/dst/rootfs/boot/cmdline.txt
+rm -f /tmp/rpi/dst/rootfs/boot/bootcode.bin
+rm -f /tmp/rpi/dst/rootfs/boot/start.elf
+
 
 mkdir -p /tmp/rpi/dst/rootfs/data
 mount ${LDST}p4 /tmp/rpi/dst/rootfs/data
@@ -73,7 +95,7 @@ echo "dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elev
 
 cat <<EOF >/tmp/rpi/dst/rootfs/etc/fstab
 proc            /proc           proc    defaults          0       0
-/dev/mmcblk0p1  /boot           vfat    defaults          0       2
+/dev/mmcblk0p1  /boot/uboot     vfat    defaults          0       2
 /dev/mmcblk0p2  /               ext4    defaults,noatime,data=journal  0       1
 /dev/mmcblk0p4  /data           ext4    defaults,noatime,data=journal  0       1
 tmpfs           /tmp            tmpfs   size=20M          0       0
