@@ -18,6 +18,8 @@ export CROSS_COMPILE=arm-linux-gnueabi-
 git clone git://git.denx.de/u-boot.git
 pushd u-boot
 make rpi_2_defconfig
+sed -i 's/CONFIG_BOOTCOMMAND/#CONFIG_BOOTCOMMAND/g' .config 
+echo "CONFIG_BOOTCOMMAND=\"mmc dev 0; fatload mmc 0:1 \${kernel_addr_r} uboot.shi; source \${kernel_addr_r}\"" >> .config
 make u-boot.bin
 UBOOTBIN=$(pwd)/u-boot.bin
 popd
@@ -78,6 +80,17 @@ cp /tmp/rpi/src/boot/start.elf /tmp/rpi/dst/rootfs/boot/uboot/
 cp /tmp/rpi/src/boot/config.txt /tmp/rpi/dst/rootfs/boot/uboot/
 cp ${UBOOTBIN} /tmp/rpi/dst/rootfs/boot/uboot/
 echo "kernel=u-boot.bin" >> /tmp/rpi/dst/rootfs/boot/uboot/config.txt
+
+cat <<EOF >/tmp/rpi/uboot.shi.txt
+setenv fdtfile /boot/bcm2709-rpi-2-b.dtb
+mmc dev 0
+fatload mmc 0:2 \${kernel_addr_r} /boot/kernel7.img
+fatload mmc 0:2 \${fdt_addr} \${fdtfile}
+setenv bootargs earlyprintk console=tty0 console=ttyAMA0 root=/dev/mmcblk0p2 rootfstype=ext4 rootwait noinitrd
+bootz \${kernel_addr_r} - \${fdt_addr}
+EOF
+# convert to uboot script format
+mkimage -T script -C none -n 'Boot Script' -d /tmp/rpi/uboot.shi.txt /tmp/rpi/dst/rootfs/boot/uboot/uboot.shi
 
 # copy required linux boot files to /boot (on rootfs partition)
 rsync -az -H --delete --numeric-ids /tmp/rpi/src/boot/ /tmp/rpi/dst/rootfs/boot
