@@ -200,7 +200,7 @@ umount /tmp/rpi/src/rootfs/dev/
 umount /tmp/rpi/src/rootfs/sys/
 umount /tmp/rpi/src/rootfs/proc/
 
-umount /tmp/rpi/dst/rootfs/boot
+umount /tmp/rpi/dst/rootfs/boot/uboot
 umount /tmp/rpi/dst/rootfs/data
 
 umount /tmp/rpi/dst/rootfs || umount -f /tmp/rpi/dst/rootfs
