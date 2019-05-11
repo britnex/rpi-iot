@@ -11,7 +11,7 @@ rm -rf /tmp/rpi/*
 cd /tmp/rpi
 
 apt-get update
-DEBIAN_FRONTEND=noninteractive apt-get install -y bison bc flex build-essential git gcc-arm-linux-gnueabi unzip tar mount dosfstools e2fsprogs qemu-user-static qemu-system-arm zip rsync coreutils 
+DEBIAN_FRONTEND=noninteractive apt-get install -y u-boot-tools bison bc flex build-essential git gcc-arm-linux-gnueabi unzip tar mount dosfstools e2fsprogs qemu-user-static qemu-system-arm zip rsync coreutils 
 export ARCH=arm
 export CROSS_COMPILE=arm-linux-gnueabi-
 
@@ -76,7 +76,7 @@ mount ${LDST}p1 /tmp/rpi/dst/rootfs/boot/uboot
 cp /tmp/rpi/src/boot/bootcode.bin /tmp/rpi/dst/rootfs/boot/uboot/
 cp /tmp/rpi/src/boot/start.elf /tmp/rpi/dst/rootfs/boot/uboot/
 cp /tmp/rpi/src/boot/config.txt /tmp/rpi/dst/rootfs/boot/uboot/
-cp ${UBOOTBIN} /tmp/rpi/dst/rootfs/uboot/boot/
+cp ${UBOOTBIN} /tmp/rpi/dst/rootfs/uboot/uboot/
 echo "kernel=u-boot.bin" >> /tmp/rpi/dst/rootfs/boot/uboot/config.txt
 
 # copy required linux boot files to /boot (on rootfs partition)
