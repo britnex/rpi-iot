@@ -78,6 +78,7 @@ mount ${LDST}p1 /tmp/rpi/dst/rootfs/boot/uboot
 cp /tmp/rpi/src/boot/bootcode.bin /tmp/rpi/dst/rootfs/boot/uboot/
 cp /tmp/rpi/src/boot/*.elf /tmp/rpi/dst/rootfs/boot/uboot/
 cp /tmp/rpi/src/boot/*.dat /tmp/rpi/dst/rootfs/boot/uboot/
+cp /tmp/rpi/src/boot/LICENCE.broadcom /tmp/rpi/dst/rootfs/boot/uboot/
 cp /tmp/rpi/src/boot/config.txt /tmp/rpi/dst/rootfs/boot/uboot/
 cp ${UBOOTBIN} /tmp/rpi/dst/rootfs/boot/uboot/
 echo "kernel=u-boot.bin" >> /tmp/rpi/dst/rootfs/boot/uboot/config.txt
