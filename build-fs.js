@@ -90,7 +90,7 @@ setenv fdtfile /boot/bcm2709-rpi-2-b.dtb
 mmc dev 0
 ext2load mmc 0:2 \${kernel_addr_r} /boot/kernel7.img
 ext2load mmc 0:2 \${fdt_addr} \${fdtfile}
-setenv bootargs earlyprintk console=tty0 console=ttyAMA0 root=/dev/mmcblk0p2 rootfstype=ext4 rootwait noinitrd
+setenv bootargs earlyprintk console=tty0 root=/dev/mmcblk0p2 rootfstype=ext4 rootwait dwc_otg.lpm_enable=0 fsck.repair=yes noinitrd
 bootz \${kernel_addr_r} - \${fdt_addr}
 EOF
 # convert to uboot script format
