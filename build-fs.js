@@ -109,8 +109,8 @@ cat <<EOF >/tmp/rpi/dst/rootfs/etc/fstab
 proc            /proc           proc    defaults          0       0
 /dev/mmcblk0p2  /               ext4    defaults,noatime  0       1
 /dev/mmcblk0p4  /data           ext4    defaults,noatime  0       1
-tmpfs           /tmp            tmpfs   size=20M          0       0
-tmpfs           /var/tmp        tmpfs   size=20M          0       0
+tmpfs           /tmp            tmpfs   size=100M         0       0
+tmpfs           /var/tmp        tmpfs   size=100M         0       0
 tmpfs           /var/log        tmpfs   size=40M          0       0
 EOF
 
@@ -120,7 +120,6 @@ cp $(which qemu-arm-static) /tmp/rpi/src/rootfs/usr/bin
 mount -t proc proc /tmp/rpi/src/rootfs/proc/
 mount -t sysfs sys /tmp/rpi/src/rootfs/sys/
 mount -o bind /dev /tmp/rpi/src/rootfs/dev/
-
 
 
 cat <<EOF >/tmp/rpi/dst/rootfs/script.sh
@@ -145,17 +144,7 @@ rm -f $(which rpi-update)
 chmod -x /etc/cron.daily/man-db || true
 chmod -x /etc/cron.weekly/man-db || true
 
-# enable readonly filesystem
-chmod +x /etc/initramfs-tools/hooks/overlay
-chmod +x /etc/initramfs-tools/scripts/init-bottom/overlay
-
-# enable readonly in firstboot.sh
-
-# enable watchdog
-echo "dtparam=watchdog=on" >>/boot/config.txt
-sed -i 's/#RuntimeWatchdogSec=0/RuntimeWatchdogSec=14/g' /etc/systemd/system.conf
-
-# first boot
+# first boot, enable readonly in firstboot.sh
 chmod +x /usr/bin/firstboot.sh
 systemctl enable firstboot
 
@@ -165,6 +154,8 @@ systemctl disable resize2fs_once.service
 systemctl mask resize2fs_once.service
 
 # build uboot compatible initrd
+chmod +x /etc/initramfs-tools/hooks/overlay
+chmod +x /etc/initramfs-tools/scripts/init-bottom/overlay
 kernelver=\$(ls -1a /lib/modules | grep -)
 mkinitramfs -o initramfs.gz \${kernelver}
 gunzip initramfs.gz
