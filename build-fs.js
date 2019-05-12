@@ -34,6 +34,8 @@ LSRC=$(losetup -a | grep raspbian-stretch-lite | sed 's/://g' | cut -d' ' -f1)
 
 
 dd if=/dev/zero of=dd.img bs=1M count=7000
+# set active rootfs 'A'=0x41
+printf '\x41' | dd of=dd.img bs=1 seek=0 conv=notrunc
 losetup -fP dd.img
 LDST=$(losetup -a | grep dd.img | sed 's/://g' | cut -d' ' -f1)
 
