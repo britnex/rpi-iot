@@ -114,7 +114,6 @@ echo "dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elev
 
 cat <<EOF >/tmp/rpi/dst/rootfs/etc/fstab
 proc            /proc           proc    defaults          0       0
-/dev/mmcblk0p1  /boot/uboot     vfat    defaults          0       2
 /dev/mmcblk0p2  /               ext4    defaults,noatime  0       1
 /dev/mmcblk0p4  /data           ext4    defaults,noatime  0       1
 tmpfs           /tmp            tmpfs   size=20M          0       0
@@ -133,6 +132,8 @@ mount -o bind /dev /tmp/rpi/src/rootfs/dev/
 
 cat <<EOF >/tmp/rpi/dst/rootfs/script.sh
 #!/bin/bash
+set -x
+
 mkdir -p /data/docker
 touch /data/docker/.keep
 curl -fsSL get.docker.com -o get-docker.sh && sh get-docker.sh
@@ -153,7 +154,7 @@ chmod -x /etc/cron.weekly/man-db || true
 chmod +x /etc/initramfs-tools/hooks/overlay
 chmod +x /etc/initramfs-tools/scripts/init-bottom/overlay
 
-# readonly enabled in firstboot.sh
+# enable readonly in firstboot.sh
 
 # enable watchdog
 echo "dtparam=watchdog=on" >>/boot/config.txt
@@ -167,6 +168,12 @@ DEBIAN_FRONTEND=noninteractive apt-get clean
 
 systemctl disable resize2fs_once.service
 systemctl mask resize2fs_once.service
+
+# build uboot compatible initrd
+kernelver=$(ls -1a /lib/modules | grep -)
+mkinitramfs -o initramfs.gz ${kernelver}
+gunzip initramfs.gz
+mkimage -A arm -T ramdisk -C none -n uInitrd -d initramfs /boot/uInitrd
 
 EOF
 chmod +x /tmp/rpi/dst/rootfs/script.sh
