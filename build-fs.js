@@ -40,7 +40,7 @@ losetup -fP dd.img
 LDST=$(losetup -a | grep dd.img | sed 's/://g' | cut -d' ' -f1)
 
 sfdisk $LDST  << EOF
-,128M,c
+,32M,c
 ,2048M
 ,2048M
 ,2048M
