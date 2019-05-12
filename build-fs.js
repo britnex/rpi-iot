@@ -11,7 +11,7 @@ rm -rf /tmp/rpi/*
 cd /tmp/rpi
 
 apt-get update
-DEBIAN_FRONTEND=noninteractive apt-get install -y u-boot-tools bison bc flex build-essential git gcc-arm-linux-gnueabi unzip tar mount dosfstools e2fsprogs qemu-user-static qemu-system-arm zip rsync coreutils u-boot-tools
+DEBIAN_FRONTEND=noninteractive apt-get install -y u-boot-tools bison bc flex build-essential git gcc-arm-linux-gnueabi unzip tar mount dosfstools e2fsprogs qemu-user-static qemu-system-arm zip rsync coreutils
 export ARCH=arm
 export CROSS_COMPILE=arm-linux-gnueabi-
 
@@ -104,7 +104,8 @@ rsync -az -H --numeric-ids /tmp/rpi/src/boot/ /tmp/rpi/dst/rootfs/boot
 rm -f /tmp/rpi/dst/rootfs/boot/config.txt
 rm -f /tmp/rpi/dst/rootfs/boot/cmdline.txt
 rm -f /tmp/rpi/dst/rootfs/boot/bootcode.bin
-rm -f /tmp/rpi/dst/rootfs/boot/start.elf
+rm -f /tmp/rpi/dst/rootfs/boot/*.elf
+rm -f /tmp/rpi/dst/rootfs/boot/*.dat
 
 
 mkdir -p /tmp/rpi/dst/rootfs/data
@@ -133,6 +134,8 @@ mount -o bind /dev /tmp/rpi/src/rootfs/dev/
 cat <<EOF >/tmp/rpi/dst/rootfs/script.sh
 #!/bin/bash
 set -x
+
+DEBIAN_FRONTEND=noninteractive apt-get install -y u-boot-tools
 
 mkdir -p /data/docker
 touch /data/docker/.keep
@@ -170,7 +173,7 @@ systemctl disable resize2fs_once.service
 systemctl mask resize2fs_once.service
 
 # build uboot compatible initrd
-kernelver=$(ls -1a /lib/modules | grep -)
+kernelver=\$(ls -1a /lib/modules | grep -)
 mkinitramfs -o initramfs.gz ${kernelver}
 gunzip initramfs.gz
 mkimage -A arm -T ramdisk -C none -n uInitrd -d initramfs /boot/uInitrd
