@@ -74,6 +74,12 @@ cp -a ${cur}/usr/* /tmp/rpi/dst/rootfs/usr/
 chmod +x /tmp/rpi/dst/rootfs/usr/bin/reboot-rw.sh
 chmod +x /tmp/rpi/dst/rootfs/usr/bin/reboot-ro.sh
 
+cat <<EOF >>/tmp/rpi/dst/rootfs/etc/bash.bashrc
+if df | grep "/rw\$" > /dev/null; then
+PS1=\$(echo \$PS1 "\[\033[0;31m\](readonly)\[\033[0m\] ")
+fi
+EOF
+
 mkdir -p /tmp/rpi/dst/rootfs/boot/uboot
 mount ${LDST}p1 /tmp/rpi/dst/rootfs/boot/uboot
 
