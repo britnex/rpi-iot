@@ -127,7 +127,10 @@ cat <<EOF >/tmp/rpi/dst/rootfs/script.sh
 #!/bin/bash
 set -x
 
-DEBIAN_FRONTEND=noninteractive apt-get install -y u-boot-tools cloud-guest-utils
+DEBIAN_FRONTEND=noninteractive apt-get install -y u-boot-tools cloud-guest-utils ufw
+
+ufw default deny
+ufw enable
 
 mkdir -p /data/docker
 touch /data/docker/.keep
