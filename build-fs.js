@@ -71,9 +71,6 @@ cp -a ${cur}/etc/* /tmp/rpi/dst/rootfs/etc/
 cp -a ${cur}/lib/* /tmp/rpi/dst/rootfs/lib/
 cp -a ${cur}/usr/* /tmp/rpi/dst/rootfs/usr/
 
-chmod +x /tmp/rpi/dst/rootfs/usr/bin/reboot-rw.sh
-chmod +x /tmp/rpi/dst/rootfs/usr/bin/reboot-ro.sh
-
 cat <<EOF >>/tmp/rpi/dst/rootfs/etc/bash.bashrc
 if df | grep "/rw\$" > /dev/null; then
 PS1=\$(echo \$PS1 "\[\033[0;31m\](readonly)\[\033[0m\] ")
@@ -147,6 +144,12 @@ rm -f $(which rpi-update)
 
 chmod -x /etc/cron.daily/man-db || true
 chmod -x /etc/cron.weekly/man-db || true
+
+chmod +x /usr/bin/reboot-rw.sh
+chmod +x /usr/bin/reboot-ro.sh
+
+# enable watchdog
+sed -i 's/#RuntimeWatchdogSec=0/RuntimeWatchdogSec=14/g' /etc/systemd/system.conf
 
 # first boot, enable readonly in firstboot.sh
 chmod +x /usr/bin/firstboot.sh
