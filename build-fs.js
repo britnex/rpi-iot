@@ -61,8 +61,6 @@ mount ${LSRC}p1 /tmp/rpi/src/boot
 mkdir -p /tmp/rpi/src/rootfs
 mount ${LSRC}p2 /tmp/rpi/src/rootfs
 
-
-
 mkdir -p /tmp/rpi/dst/rootfs
 mount ${LDST}p2 /tmp/rpi/dst/rootfs
  
@@ -99,21 +97,19 @@ rm -f /tmp/rpi/dst/rootfs/boot/bootcode.bin
 rm -f /tmp/rpi/dst/rootfs/boot/*.elf
 rm -f /tmp/rpi/dst/rootfs/boot/*.dat
 
-
 mkdir -p /tmp/rpi/dst/rootfs/data
 mount ${LDST}p4 /tmp/rpi/dst/rootfs/data
 
 echo "dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait qu3iet init=/sbin/init" > /tmp/rpi/src/boot/cmdline.txt
 
 cat <<EOF >/tmp/rpi/dst/rootfs/etc/fstab
-proc            /proc           proc    defaults          0       0
-/dev/mmcblk0p2  /               ext4    defaults,noatime  0       1
-/dev/mmcblk0p4  /data           ext4    defaults,noatime  0       1
-tmpfs           /tmp            tmpfs   size=100M         0       0
-tmpfs           /var/tmp        tmpfs   size=100M         0       0
-tmpfs           /var/log        tmpfs   size=40M          0       0
+proc            /proc           proc    defaults                       0       0
+/dev/mmcblk0p2  /               ext4    defaults,noatime               0       1
+/dev/mmcblk0p4  /data           ext4    defaults,noatime,data=journal  0       1
+tmpfs           /tmp            tmpfs   size=100M                      0       0
+tmpfs           /var/tmp        tmpfs   size=100M                      0       0
+tmpfs           /var/log        tmpfs   size=40M                       0       0
 EOF
-
 
 cp $(which qemu-arm-static) /tmp/rpi/src/rootfs/usr/bin
 
@@ -121,12 +117,11 @@ mount -t proc proc /tmp/rpi/src/rootfs/proc/
 mount -t sysfs sys /tmp/rpi/src/rootfs/sys/
 mount -o bind /dev /tmp/rpi/src/rootfs/dev/
 
-
 cat <<EOF >/tmp/rpi/dst/rootfs/script.sh
 #!/bin/bash
 set -x
 
-DEBIAN_FRONTEND=noninteractive apt-get install -y u-boot-tools
+DEBIAN_FRONTEND=noninteractive apt-get install -y u-boot-tools cloud-guest-utils
 
 mkdir -p /data/docker
 touch /data/docker/.keep
@@ -149,9 +144,6 @@ chmod +x /usr/bin/firstboot.sh
 systemctl enable firstboot
 
 DEBIAN_FRONTEND=noninteractive apt-get clean
-
-# only resize data partition
-sed -i 's@findmnt /@findmnt /data@' /etc/init.d/resize2fs_once
 
 # build uboot compatible initrd
 chmod +x /etc/initramfs-tools/hooks/overlay
