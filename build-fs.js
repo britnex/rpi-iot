@@ -87,16 +87,8 @@ cp /tmp/rpi/src/boot/config.txt /tmp/rpi/dst/rootfs/boot/uboot/
 cp ${UBOOTBIN} /tmp/rpi/dst/rootfs/boot/uboot/
 echo "kernel=u-boot.bin" >> /tmp/rpi/dst/rootfs/boot/uboot/config.txt
 
-cat <<EOF >/tmp/rpi/uboot.shi.txt
-setenv fdtfile /boot/bcm2709-rpi-2-b.dtb
-mmc dev 0
-ext2load mmc 0:2 \${kernel_addr_r} /boot/kernel7.img
-ext2load mmc 0:2 \${fdt_addr} \${fdtfile}
-setenv bootargs earlyprintk console=tty0 root=/dev/mmcblk0p2 rootfstype=ext4 rootwait dwc_otg.lpm_enable=0 fsck.repair=yes fsck.mode=force noinitrd
-bootz \${kernel_addr_r} - \${fdt_addr}
-EOF
 # convert to uboot script format
-mkimage -T script -C none -n 'Boot Script' -d /tmp/rpi/uboot.shi.txt /tmp/rpi/dst/rootfs/boot/uboot/uboot.shi
+mkimage -T script -C none -n 'Boot Script' -d ${cur}/src/uboot.shi.txt /tmp/rpi/dst/rootfs/boot/uboot/uboot.shi
 
 # copy required linux boot files to /boot (on rootfs partition)
 rsync -az -H --numeric-ids /tmp/rpi/src/boot/ /tmp/rpi/dst/rootfs/boot
