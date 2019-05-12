@@ -3,7 +3,7 @@
 set -e
 
 #enable readonly 
-echo readonly > /boot/readonly
+echo 7 > /boot/readonly
 
 # disable this service
 systemctl disable firstboot
