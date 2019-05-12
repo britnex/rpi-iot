@@ -1,5 +1,6 @@
 [Unit]
 Description=First Boot Service
+After=multi-user.target
 
 [Service]
 Type=simple
