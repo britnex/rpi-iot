@@ -150,8 +150,8 @@ systemctl enable firstboot
 
 DEBIAN_FRONTEND=noninteractive apt-get clean
 
-systemctl disable resize2fs_once.service
-systemctl mask resize2fs_once.service
+# only resize data partition
+sed -i 's@findmnt /@findmnt /data@' /etc/init.d/resize2fs_once
 
 # build uboot compatible initrd
 chmod +x /etc/initramfs-tools/hooks/overlay
