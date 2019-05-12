@@ -133,14 +133,6 @@ ufw default deny
 ufw allow ssh
 ufw enable
 
-cat <<EOF >>/etc/ssh/sshd_config
-PermitRootLogin yes
-ChallengeResponseAuthentication no
-PasswordAuthentication no
-AllowUsers root
-DenyUsers pi
-
-EOF
 systemctl enable ssh
 
 mkdir -p /data/docker
