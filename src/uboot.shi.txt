@@ -1,0 +1,29 @@
+mmc dev 0
+
+# boot from rootfsA
+rootfspart=2
+
+mmc read ${ramdisk_addr_r} 0x0 0x1
+setexpr.b bootfrom *${ramdisk_addr_r}
+if itest.b ${bootfrom} -eq 42; then
+# boot from rootfsB 
+ rootfspart=3
+fi
+
+overlay=no
+initrd=noinitrd
+initrdaddr=-
+
+if ext2load mmc 0:${rootfspart} ${ramdisk_addr_r} /boot/uInitrd; then
+ initrdaddr=${ramdisk_addr_r}
+ initrd=${ramdisk_addr_r}
+ if ext2load mmc 0:${rootfspart} ${fdt_addr_r} /boot/readonly; then
+  overlay=yes
+ fi
+fi
+
+setenv bootargs earlyprintk console=tty0 root=/dev/mmcblk0p2 rootfstype=ext4 rootwait dwc_otg.lpm_enable=0 fsck.repair=yes fsck.mode=force ${initrd} overlay=${overlay}
+
+ext2load mmc 0:${rootfspart} ${kernel_addr_r} /boot/kernel7.img
+ext2load mmc 0:${rootfspart} ${fdt_addr} /boot/bcm2709-rpi-2-b.dtb
+bootz ${kernel_addr_r} ${initrdaddr} ${fdt_addr}
