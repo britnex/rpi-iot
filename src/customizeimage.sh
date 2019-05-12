@@ -34,6 +34,8 @@ chmod 444 /etc/cron.weekly/man-db || true
 chmod 744 /usr/bin/reboot-rw.sh
 chmod 744 /usr/bin/reboot-ro.sh
 
+chmod 744 /etc/init.d/resize2fs_once
+
 chmod 644 /etc/ssh/sshd_config
 
 # build uboot compatible initrd
