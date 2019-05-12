@@ -44,7 +44,7 @@ chmod 644 /etc/ssh/sshd_config
 chmod 744 /etc/initramfs-tools/hooks/overlay
 chmod 744 /etc/initramfs-tools/scripts/init-bottom/overlay
 
-kernelver=\$(ls -1a /lib/modules | grep -)
-mkinitramfs -o initramfs.gz \${kernelver}
+kernelver=$(ls -1a /lib/modules | grep -)
+mkinitramfs -o initramfs.gz ${kernelver}
 gunzip initramfs.gz
 mkimage -A arm -T ramdisk -C none -n uInitrd -d initramfs /boot/uInitrd
