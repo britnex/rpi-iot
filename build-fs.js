@@ -175,7 +175,7 @@ umount /tmp/rpi/src/rootfs
 losetup -D ${LDST}
 losetup -D ${LSRC}
 
-hash=$(sha256sum /tmp/rpi/image.tgz | cut -d' ' -f1)
+hash=$(sha1sum /tmp/rpi/image.tgz | cut -d' ' -f1)
 tar czf /tmp/rpi/image-${hash}-dd.tgz dd.img
 rm -f *.img
 rm -f *.zip
