@@ -174,7 +174,7 @@ systemctl mask resize2fs_once.service
 
 # build uboot compatible initrd
 kernelver=\$(ls -1a /lib/modules | grep -)
-mkinitramfs -o initramfs.gz ${kernelver}
+mkinitramfs -o initramfs.gz \${kernelver}
 gunzip initramfs.gz
 mkimage -A arm -T ramdisk -C none -n uInitrd -d initramfs /boot/uInitrd
 
