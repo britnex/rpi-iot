@@ -130,7 +130,18 @@ set -x
 DEBIAN_FRONTEND=noninteractive apt-get install -y u-boot-tools cloud-guest-utils ufw
 
 ufw default deny
+ufw allow ssh
 ufw enable
+
+cat <<EOF >>/etc/ssh/sshd_config
+PermitRootLogin yes
+ChallengeResponseAuthentication no
+PasswordAuthentication no
+AllowUsers root
+DenyUsers pi
+
+EOF
+systemctl enable ssh
 
 mkdir -p /data/docker
 touch /data/docker/.keep
