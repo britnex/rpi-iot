@@ -8,5 +8,5 @@ echo readonly > /boot/readonly
 systemctl disable firstboot
 systemctl mask firstboot
 
-#reboot
+reboot
 exit 0
