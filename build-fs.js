@@ -19,7 +19,7 @@ git clone git://git.denx.de/u-boot.git
 pushd u-boot
 make rpi_2_defconfig
 sed -i 's/CONFIG_BOOTCOMMAND/#CONFIG_BOOTCOMMAND/g' .config 
-echo "CONFIG_BOOTCOMMAND=\"mmc dev 0; fatload mmc 0:1 \${kernel_addr_r} uboot.shi; source \${kernel_addr_r}\"" >> .config
+echo "CONFIG_BOOTCOMMAND=\"mmc dev 0; fatload mmc 0:1 \${scriptaddr} uboot.shi; source \${scriptaddr}\"" >> .config
 make u-boot.bin
 UBOOTBIN=$(pwd)/u-boot.bin
 popd
