@@ -71,6 +71,9 @@ cp -a ${cur}/etc/* /tmp/rpi/dst/rootfs/etc/
 cp -a ${cur}/lib/* /tmp/rpi/dst/rootfs/lib/
 cp -a ${cur}/usr/* /tmp/rpi/dst/rootfs/usr/
 
+chmod +x /tmp/rpi/dst/rootfs/usr/bin/reboot-rw.sh
+chmod +x /tmp/rpi/dst/rootfs/usr/bin/reboot-ro.sh
+
 mkdir -p /tmp/rpi/dst/rootfs/boot/uboot
 mount ${LDST}p1 /tmp/rpi/dst/rootfs/boot/uboot
 
