@@ -4,10 +4,6 @@ set -e
 
 DEBIAN_FRONTEND=noninteractive apt-get install -y u-boot-tools cloud-guest-utils ufw
 
-ufw default deny
-ufw allow ssh
-ufw enable
-
 systemctl enable ssh
 
 mkdir -p /data/docker
