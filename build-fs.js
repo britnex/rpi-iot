@@ -98,7 +98,7 @@ EOF
 
 mkdir -p rootfs/etc/boot.d
 
-cat <<EOF > rootfs/etc/boot.d/hostname
+cat <<EOF > rootfs/etc/boot.d/01_hostname
 #!/bin/bash
 if test -e /sys/class/net/eth0/address; then 
  address=\$(sed /sys/class/net/eth0/address -e 's/://g')
@@ -107,7 +107,24 @@ if test -e /sys/class/net/eth0/address; then
  chmod -x \$0
 fi
 EOF
-chmod +x rootfs/etc/boot.d/hostname
+chmod +x rootfs/etc/boot.d/01_hostname
+
+cat <<EOF > rootfs/etc/boot.d/99_firstboot
+#!/bin/bash
+ chmod -x \$0
+ set -e
+
+ # enable firewall
+ ufw default deny
+ ufw allow ssh
+ ufw enable
+
+ #enable readonly 
+ echo 7 > /boot/readonly
+
+ bash -c "sleep 10; reboot; sleep 10;"
+EOF
+chmod +x rootfs/etc/boot.d/99_firstboot
 
 chroot rootfs debootstrap/debootstrap --second-stage
 
