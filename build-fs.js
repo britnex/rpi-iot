@@ -70,9 +70,10 @@ mount ${LDST}p2 /tmp/rpi/dst/rootfs
 DIST=buster
 
 pushd /tmp/rpi/dst
-debootstrap --arch=armhf --variant=minbase --include sysvinit-core,openssh-server,auditd,u-boot-tools,cloud-guest-utils,ufw --foreign $DIST rootfs http://ftp.debian.org/debian
+debootstrap --arch=armhf --variant=minbase --include sysvinit-core,openssh-server,auditd,u-boot-tools,initramfs-tools,gzip,cloud-guest-utils,ufw --foreign $DIST rootfs http://ftp.debian.org/debian
 
-cp /usr/bin/qemu-arm-static rootfs/usr/bin/
+# included qemu arm emulator into image (required to chroot into rootfs)
+cp $(which qemu-arm-static) rootfs/usr/bin
 
 sed -i -e 's/systemd systemd-sysv //g' rootfs/debootstrap/required
 
@@ -184,8 +185,7 @@ tmpfs           /var/tmp        tmpfs   size=100M                      0       0
 tmpfs           /var/log        tmpfs   size=40M                       0       0
 EOF
 
-# included qemu arm emulator into image (required to chroot into rootfs)
-cp $(which qemu-arm-static) /tmp/rpi/dst/rootfs/usr/bin
+
 
 mount -t proc proc /tmp/rpi/dst/rootfs/proc/
 mount -t sysfs sys /tmp/rpi/dst/rootfs/sys/
