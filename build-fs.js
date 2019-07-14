@@ -220,9 +220,9 @@ pushd /tmp/rpi/dst/rootfs
 tar czf /tmp/rpi/image.tgz *
 popd
 
-umount /tmp/rpi/src/rootfs/dev/
-umount /tmp/rpi/src/rootfs/sys/
-umount /tmp/rpi/src/rootfs/proc/
+umount /tmp/rpi/dst/rootfs/dev/
+umount /tmp/rpi/dst/rootfs/sys/
+umount /tmp/rpi/dst/rootfs/proc/
 
 umount /tmp/rpi/dst/rootfs/boot/uboot
 umount /tmp/rpi/dst/rootfs/data
