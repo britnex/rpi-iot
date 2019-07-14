@@ -41,7 +41,7 @@ losetup -fP dd.img
 LDST=$(losetup -a | grep dd.img | sed 's/://g' | cut -d' ' -f1)
 
 sfdisk $LDST  << EOF
-,32M,c
+,256M,c
 ,2048M
 ,2048M
 ,2048M
@@ -149,13 +149,7 @@ mkdir -p /tmp/rpi/dst/rootfs/boot/uboot
 mount ${LDST}p1 /tmp/rpi/dst/rootfs/boot/uboot
 
 # copy required rpi boot files to /boot/uboot (boot partition)
-cp /tmp/rpi/src/boot/*.bin /tmp/rpi/dst/rootfs/boot/uboot/
-cp /tmp/rpi/src/boot/*.elf /tmp/rpi/dst/rootfs/boot/uboot/
-cp /tmp/rpi/src/boot/*.dat /tmp/rpi/dst/rootfs/boot/uboot/
-cp /tmp/rpi/src/boot/*.dtb /tmp/rpi/dst/rootfs/boot/uboot/
-cp /tmp/rpi/src/boot/COPYING.linux /tmp/rpi/dst/rootfs/boot/uboot/
-cp /tmp/rpi/src/boot/LICENCE.broadcom /tmp/rpi/dst/rootfs/boot/uboot/
-cp /tmp/rpi/src/boot/config.txt /tmp/rpi/dst/rootfs/boot/uboot/
+cp -r /tmp/rpi/src/boot/* /tmp/rpi/dst/rootfs/boot/uboot/
 cp ${UBOOTBIN} /tmp/rpi/dst/rootfs/boot/uboot/
 echo "kernel=u-boot.bin" >> /tmp/rpi/dst/rootfs/boot/uboot/config.txt
 
