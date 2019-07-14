@@ -2,30 +2,6 @@
 set -x
 set -e
 
-DEBIAN_FRONTEND=noninteractive apt-get install -y u-boot-tools cloud-guest-utils ufw
-
-systemctl enable ssh
-
-mkdir -p /data/docker
-touch /data/docker/.keep
-curl -fsSL get.docker.com -o get-docker.sh && sh get-docker.sh
-
-# disable swap
-dphys-swapfile swapoff
-systemctl disable dphys-swapfile
-DEBIAN_FRONTEND=noninteractive apt-get purge -y dphys-swapfile
-
-DEBIAN_FRONTEND=noninteractive apt-get purge -y logrotate
-
-rm -f $(which rpi-update)
-
-# enable watchdog
-sed -i 's/#RuntimeWatchdogSec=0/RuntimeWatchdogSec=14/g' /etc/systemd/system.conf
-
-# first boot, enable readonly in firstboot.sh
-chmod 744 /usr/bin/firstboot.sh
-systemctl enable firstboot
-
 DEBIAN_FRONTEND=noninteractive apt-get clean
 
 chmod 444 /etc/cron.daily/man-db || true
