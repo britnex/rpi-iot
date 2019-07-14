@@ -2,6 +2,7 @@
 set -x
 set -e
 
+DEBIAN_FRONTEND=noninteractive apt-get install -y u-boot-tools cloud-guest-utils ufw
 DEBIAN_FRONTEND=noninteractive apt-get clean
 
 chmod 444 /etc/cron.daily/man-db || true
