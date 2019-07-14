@@ -65,8 +65,6 @@ mount ${LSRC}p2 /tmp/rpi/src/rootfs
 mkdir -p /tmp/rpi/dst/rootfs
 mount ${LDST}p2 /tmp/rpi/dst/rootfs
  
-#rsync -az -H --delete --numeric-ids /tmp/rpi/src/rootfs/ /tmp/rpi/dst/rootfs/
-
 
 # build rootfs
 DIST=buster
@@ -96,8 +94,8 @@ cat <<EOF >>rootfs/etc/pam.d/sshd
 session     required      pam_tty_audit.so enable=*
 EOF
 
+# boot scripts started from /etc/rc.local (if files are executable)
 mkdir -p rootfs/etc/boot.d
-
 
 cat <<EOF > rootfs/etc/boot.d/99_firstboot
 #!/bin/bash
@@ -129,15 +127,17 @@ popd
 #end build rootfs
 
 
+# copy raspberry pi kernel modules
 mkdir -p /tmp/rpi/dst/rootfs/lib/modules
 rsync -az -H --delete --numeric-ids /tmp/rpi/src/rootfs/lib/modules /tmp/rpi/dst/rootfs/lib
 
 
-# copy 
+# copy files from this repository to image
 cp -a ${cur}/etc/* /tmp/rpi/dst/rootfs/etc/
 cp -a ${cur}/lib/* /tmp/rpi/dst/rootfs/lib/
 cp -a ${cur}/usr/* /tmp/rpi/dst/rootfs/usr/
 
+# show readonly in command prompt
 cat <<EOF >>/tmp/rpi/dst/rootfs/etc/bash.bashrc
 if df | grep "/rw\$" > /dev/null; then
 PS1=\$(echo \$PS1 "\[\033[0;31m\](readonly)\[\033[0m\] ")
@@ -184,6 +184,7 @@ tmpfs           /var/tmp        tmpfs   size=100M                      0       0
 tmpfs           /var/log        tmpfs   size=40M                       0       0
 EOF
 
+# included qemu arm emulator into image (required to chroot into rootfs)
 cp $(which qemu-arm-static) /tmp/rpi/src/rootfs/usr/bin
 
 mount -t proc proc /tmp/rpi/src/rootfs/proc/
@@ -214,6 +215,8 @@ BACKSPACE="guess"
 EOF
 
 
+# emulator no longer required
+rm -f /tmp/rpi/src/rootfs/usr/bin/qemu-arm-static
 
 pushd /tmp/rpi/dst/rootfs
 tar czf /tmp/rpi/image.tgz *
