@@ -187,8 +187,8 @@ EOF
 
 
 
-mount -t proc proc /tmp/rpi/dst/rootfs/proc/
-mount -t sysfs sys /tmp/rpi/dst/rootfs/sys/
+mount -o bind /proc /tmp/rpi/dst/rootfs/proc/
+mount -o bind /sys /tmp/rpi/dst/rootfs/sys/
 mount -o bind /dev /tmp/rpi/dst/rootfs/dev/
 
 # customize image in chroot
@@ -217,12 +217,13 @@ EOF
 rm -f /tmp/rpi/dst/rootfs/usr/bin/qemu-arm-static
 
 pushd /tmp/rpi/dst/rootfs
-tar czf /tmp/rpi/image.tgz *
+tar czf -exclude=/proc -exclude=/lost+found /tmp/rpi/image.tgz *
 popd
 
-umount /tmp/rpi/dst/rootfs/dev/
-umount /tmp/rpi/dst/rootfs/sys/
-umount /tmp/rpi/dst/rootfs/proc/
+pushd /
+umount /tmp/rpi/dst/rootfs/dev
+umount /tmp/rpi/dst/rootfs/sys
+umount /tmp/rpi/dst/rootfs/proc
 
 umount /tmp/rpi/dst/rootfs/boot/uboot
 umount /tmp/rpi/dst/rootfs/data
@@ -231,10 +232,15 @@ umount /tmp/rpi/dst/rootfs || umount -f /tmp/rpi/dst/rootfs
 
 umount /tmp/rpi/src/boot
 umount /tmp/rpi/src/rootfs
+popd
 
+sleep 1
 
 losetup -D ${LDST}
 losetup -D ${LSRC}
+
+sync
+losetup -a
 
 hash=$(sha1sum /tmp/rpi/image.tgz | cut -d' ' -f1)
 tar czf /tmp/rpi/image-${hash}-dd.tgz dd.img
