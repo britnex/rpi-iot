@@ -67,10 +67,11 @@ mount ${LDST}p2 /tmp/rpi/dst/rootfs
  
 #rsync -az -H --delete --numeric-ids /tmp/rpi/src/rootfs/ /tmp/rpi/dst/rootfs/
 
-
 # build rootfs
+DIST=buster
+
 pushd /tmp/rpi/dst
-debootstrap --arch=armhf --variant=minbase --include sysvinit-core,openssh-server,auditd --foreign buster rootfs http://ftp.debian.org/debian
+debootstrap --arch=armhf --variant=minbase --include sysvinit-core,openssh-server,auditd,u-boot-tools,cloud-guest-utils,ufw --foreign $DIST rootfs http://ftp.debian.org/debian
 
 cp /usr/bin/qemu-arm-static rootfs/usr/bin/
 
