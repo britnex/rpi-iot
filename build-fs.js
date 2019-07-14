@@ -12,6 +12,7 @@ cd /tmp/rpi
 
 apt-get update
 DEBIAN_FRONTEND=noninteractive apt-get install -y u-boot-tools bison bc flex build-essential git gcc-arm-linux-gnueabi unzip tar mount dosfstools e2fsprogs qemu-user-static qemu-system-arm zip rsync coreutils
+DEBIAN_FRONTEND=noninteractive apt-get install -y console-data console-common tzdata locales keyboard-configuration debootstrap qemu-user-static u-boot-tools dosfstools zip tar e2fsprogs
 export ARCH=arm
 export CROSS_COMPILE=arm-linux-gnueabi-
 
@@ -30,7 +31,7 @@ unzip raspbian_lite_latest.zip
 
 imgfname=$(ls -1 *.img)
 losetup -fP ${imgfname}
-LSRC=$(losetup -a | grep raspbian-stretch-lite | sed 's/://g' | cut -d' ' -f1)
+LSRC=$(losetup -a | grep $imgfname | sed 's/://g' | cut -d' ' -f1)
 
 
 dd if=/dev/zero of=dd.img bs=1M count=7000
@@ -64,7 +65,53 @@ mount ${LSRC}p2 /tmp/rpi/src/rootfs
 mkdir -p /tmp/rpi/dst/rootfs
 mount ${LDST}p2 /tmp/rpi/dst/rootfs
  
-rsync -az -H --delete --numeric-ids /tmp/rpi/src/rootfs/ /tmp/rpi/dst/rootfs/
+#rsync -az -H --delete --numeric-ids /tmp/rpi/src/rootfs/ /tmp/rpi/dst/rootfs/
+
+
+# build rootfs
+pushd /tmp/rpi/dst
+debootstrap --arch=armhf --variant=minbase --include sysvinit-core,openssh-server,auditd --foreign buster rootfs http://ftp.debian.org/debian
+
+cp /usr/bin/qemu-arm-static rootfs/usr/bin/
+
+sed -i -e 's/systemd systemd-sysv //g' rootfs/debootstrap/required
+
+cat <<EOF >>rootfs/etc/apt/apt.conf
+APT::Get::Install-Recommends "false";
+APT::Get::Install-Suggests "false";
+APT::Install-Recommends "false";
+APT::AutoRemove::RecommendsImportant "false";
+APT::AutoRemove::SuggestsImportant "false";
+EOF
+
+cat <<EOF >>rootfs/etc/pam.d/password-auth
+session     required      pam_tty_audit.so enable=*
+EOF
+cat <<EOF >>rootfs/etc/pam.d/system-auth
+session     required      pam_tty_audit.so enable=*
+EOF
+cat <<EOF >>rootfs/etc/pam.d/sshd
+session     required      pam_tty_audit.so enable=*
+EOF
+
+mkdir -p rootfs/etc/boot.d
+
+cat <<EOF > rootfs/etc/boot.d/hostname
+#!/bin/bash
+if test -e /sys/class/net/eth0/address; then 
+ address=\$(sed /sys/class/net/eth0/address -e 's/://g')
+ echo "\$address" > /etc/hostname
+ hostname \$address
+ chmod -x \$0
+fi
+EOF
+chmod +x rootfs/etc/boot.d/hostname
+
+chroot rootfs debootstrap/debootstrap --second-stage
+
+popd
+#end build rootfs
+
 
 # copy 
 cp -a ${cur}/etc/* /tmp/rpi/dst/rootfs/etc/
@@ -131,13 +178,6 @@ chroot /tmp/rpi/dst/rootfs /customizeimage.sh
 rm -f /tmp/rpi/dst/rootfs/customizeimage.sh
 rm -f /tmp/rpi/src/rootfs/usr/bin/qemu-arm-static
 
-
-mkdir -p /tmp/rpi/dst/rootfs/etc/docker
-cat <<EOF >/tmp/rpi/dst/rootfs/etc/docker/daemon.json
-{
-"graph": "/data/docker"
-}
-EOF
 
 
 cat <<EOF >/tmp/rpi/dst/rootfs/etc/default/keyboard
