@@ -130,7 +130,7 @@ popd
 
 
 mkdir -p /tmp/rpi/dst/rootfs/lib/modules
-rsync -az -H --delete --numeric-ids /tmp/rpi/src/rootfs/lib/modules /tmp/rpi/dst/rootfs/lib/modules
+rsync -az -H --delete --numeric-ids /tmp/rpi/src/rootfs/lib/modules /tmp/rpi/dst/rootfs/lib
 
 
 # copy 
