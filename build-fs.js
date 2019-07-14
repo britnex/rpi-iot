@@ -217,7 +217,7 @@ EOF
 rm -f /tmp/rpi/dst/rootfs/usr/bin/qemu-arm-static
 
 pushd /tmp/rpi/dst/rootfs
-tar czf -exclude=/proc -exclude=/lost+found /tmp/rpi/image.tgz *
+tar czf /tmp/rpi/image.tgz --exclude=dev/* --exclude=proc/* --exclude=sys/* --exclude=/lost+found *
 popd
 
 pushd /
