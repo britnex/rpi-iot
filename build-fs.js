@@ -36,7 +36,7 @@ LSRC=$(losetup -a | grep $imgfname | sed 's/://g' | cut -d' ' -f1)
 
 dd if=/dev/zero of=dd.img bs=1M count=7000
 # set active rootfs 'A'=0x41
-printf '\x41' | dd of=dd.img bs=1 seek=0 conv=notrunc
+#printf '\x41' | dd of=dd.img bs=1 seek=0 conv=notrunc
 losetup -fP dd.img
 LDST=$(losetup -a | grep dd.img | sed 's/://g' | cut -d' ' -f1)
 
@@ -210,6 +210,8 @@ EOF
 # emulator no longer required
 rm -f /tmp/rpi/dst/rootfs/usr/bin/qemu-arm-static
 
+umount /tmp/rpi/dst/rootfs/boot/uboot
+
 pushd /tmp/rpi/dst/rootfs
 tar czf /tmp/rpi/image.tgz --exclude=dev/* --exclude=proc/* --exclude=sys/* --exclude=/lost+found *
 popd
@@ -219,7 +221,6 @@ umount /tmp/rpi/dst/rootfs/dev
 umount /tmp/rpi/dst/rootfs/sys
 umount /tmp/rpi/dst/rootfs/proc
 
-umount /tmp/rpi/dst/rootfs/boot/uboot
 umount /tmp/rpi/dst/rootfs/data
 
 umount /tmp/rpi/dst/rootfs || umount -f /tmp/rpi/dst/rootfs
