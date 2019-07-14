@@ -67,6 +67,7 @@ mount ${LDST}p2 /tmp/rpi/dst/rootfs
  
 #rsync -az -H --delete --numeric-ids /tmp/rpi/src/rootfs/ /tmp/rpi/dst/rootfs/
 
+
 # build rootfs
 DIST=buster
 
@@ -112,6 +113,10 @@ chroot rootfs debootstrap/debootstrap --second-stage
 
 popd
 #end build rootfs
+
+
+mkdir -p /tmp/rpi/dst/rootfs/lib/modules
+rsync -az -H --delete --numeric-ids /tmp/rpi/src/rootfs/lib/modules /tmp/rpi/dst/rootfs/lib/modules
 
 
 # copy 
