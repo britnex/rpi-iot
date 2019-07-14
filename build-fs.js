@@ -211,6 +211,7 @@ EOF
 rm -f /tmp/rpi/dst/rootfs/usr/bin/qemu-arm-static
 
 umount /tmp/rpi/dst/rootfs/boot/uboot
+umount /tmp/rpi/dst/rootfs/data
 
 pushd /tmp/rpi/dst/rootfs
 tar czf /tmp/rpi/image.tgz --exclude=dev/* --exclude=proc/* --exclude=sys/* --exclude=/lost+found *
@@ -221,7 +222,7 @@ umount /tmp/rpi/dst/rootfs/dev
 umount /tmp/rpi/dst/rootfs/sys
 umount /tmp/rpi/dst/rootfs/proc
 
-umount /tmp/rpi/dst/rootfs/data
+
 
 umount /tmp/rpi/dst/rootfs || umount -f /tmp/rpi/dst/rootfs
 
