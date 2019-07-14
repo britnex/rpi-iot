@@ -173,7 +173,7 @@ rm -f /tmp/rpi/dst/rootfs/boot/*.dat
 mkdir -p /tmp/rpi/dst/rootfs/data
 mount ${LDST}p4 /tmp/rpi/dst/rootfs/data
 
-echo "dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait qu3iet init=/sbin/init" > /tmp/rpi/src/boot/cmdline.txt
+#echo "dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait qu3iet init=/sbin/init" > /tmp/rpi/src/boot/cmdline.txt
 
 cat <<EOF >/tmp/rpi/dst/rootfs/etc/fstab
 proc            /proc           proc    defaults                       0       0
@@ -185,11 +185,11 @@ tmpfs           /var/log        tmpfs   size=40M                       0       0
 EOF
 
 # included qemu arm emulator into image (required to chroot into rootfs)
-cp $(which qemu-arm-static) /tmp/rpi/src/rootfs/usr/bin
+cp $(which qemu-arm-static) /tmp/rpi/dst/rootfs/usr/bin
 
-mount -t proc proc /tmp/rpi/src/rootfs/proc/
-mount -t sysfs sys /tmp/rpi/src/rootfs/sys/
-mount -o bind /dev /tmp/rpi/src/rootfs/dev/
+mount -t proc proc /tmp/rpi/dst/rootfs/proc/
+mount -t sysfs sys /tmp/rpi/dst/rootfs/sys/
+mount -o bind /dev /tmp/rpi/dst/rootfs/dev/
 
 # customize image in chroot
 cp ${cur}/src/customizeimage.sh /tmp/rpi/dst/rootfs/customizeimage.sh
@@ -197,8 +197,6 @@ chmod +x /tmp/rpi/dst/rootfs/customizeimage.sh
 
 chroot /tmp/rpi/dst/rootfs /customizeimage.sh
 rm -f /tmp/rpi/dst/rootfs/customizeimage.sh
-rm -f /tmp/rpi/src/rootfs/usr/bin/qemu-arm-static
-
 
 
 cat <<EOF >/tmp/rpi/dst/rootfs/etc/default/keyboard
@@ -216,7 +214,7 @@ EOF
 
 
 # emulator no longer required
-rm -f /tmp/rpi/src/rootfs/usr/bin/qemu-arm-static
+rm -f /tmp/rpi/dst/rootfs/usr/bin/qemu-arm-static
 
 pushd /tmp/rpi/dst/rootfs
 tar czf /tmp/rpi/image.tgz *
