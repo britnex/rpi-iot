@@ -98,34 +98,31 @@ EOF
 
 mkdir -p rootfs/etc/boot.d
 
-cat <<EOF > rootfs/etc/boot.d/01_hostname
-#!/bin/bash
-if test -e /sys/class/net/eth0/address; then 
- address=\$(sed /sys/class/net/eth0/address -e 's/://g')
- echo "\$address" > /etc/hostname
- hostname \$address
- chmod -x \$0
-fi
-EOF
-chmod +x rootfs/etc/boot.d/01_hostname
 
 cat <<EOF > rootfs/etc/boot.d/99_firstboot
 #!/bin/bash
+
+# set hostname to mac address
+if test -e /sys/class/net/eth0/address; then 
+ name="rpi-"\$(sed /sys/class/net/eth0/address -e 's/://g')
+ echo "\$name" > /etc/hostname
+ hostname \$name
  chmod -x \$0
- set -e
+fi
 
- # enable firewall
- ufw default deny
- ufw allow ssh
- ufw enable
+# enable firewall
+ufw default deny
+ufw allow ssh
+ufw enable
 
- #enable readonly 
- echo 7 > /boot/readonly
-
- bash -c "sleep 10; reboot; sleep 10;"
+#disable this script
+chmod -x \$0
+#enable readonly
+reboot-ro
 EOF
 chmod +x rootfs/etc/boot.d/99_firstboot
 
+# finish debootstrap
 chroot rootfs debootstrap/debootstrap --second-stage
 
 popd
