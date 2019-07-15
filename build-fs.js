@@ -73,6 +73,9 @@ ls -la /tmp/rpi/dst/rootfs
 
 # config rootfs
 
+# ld.so.preload fix
+sed -i 's/^/#/g' /tmp/rpi/dst/rootfs/etc/ld.so.preload
+
 # included qemu arm emulator into image (required to chroot into rootfs)
 cp $(which qemu-arm-static) /tmp/rpi/dst/rootfs/usr/bin
 
@@ -148,6 +151,7 @@ EOF
 mount -o bind /proc /tmp/rpi/dst/rootfs/proc/
 mount -o bind /sys /tmp/rpi/dst/rootfs/sys/
 mount -o bind /dev /tmp/rpi/dst/rootfs/dev/
+mount -o bind /dev/pts /tmp/rpi/dst/rootfs/dev/pts
 
 # customize image in chroot
 cp ${cur}/src/customizeimage.sh /tmp/rpi/dst/rootfs/customizeimage.sh
@@ -171,6 +175,9 @@ BACKSPACE="guess"
 EOF
 
 
+# revert ld.so.preload fix
+sed -i 's/^#//g' /tmp/rpi/dst/rootfs/etc/ld.so.preload
+
 # emulator no longer required
 rm -f /tmp/rpi/dst/rootfs/usr/bin/qemu-arm-static
 
@@ -185,7 +192,7 @@ pushd /
 umount /tmp/rpi/dst/rootfs/dev
 umount /tmp/rpi/dst/rootfs/sys
 umount /tmp/rpi/dst/rootfs/proc
-
+umount /tmp/rpi/dst/rootfs/dev/pts
 
 
 umount /tmp/rpi/dst/rootfs || umount -f /tmp/rpi/dst/rootfs
