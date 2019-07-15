@@ -189,10 +189,11 @@ tar czf /tmp/rpi/image.tgz --exclude=dev/* --exclude=proc/* --exclude=sys/* --ex
 popd
 
 pushd /
+umount /tmp/rpi/dst/rootfs/dev/pts
 umount /tmp/rpi/dst/rootfs/dev
 umount /tmp/rpi/dst/rootfs/sys
 umount /tmp/rpi/dst/rootfs/proc
-umount /tmp/rpi/dst/rootfs/dev/pts
+
 
 
 umount /tmp/rpi/dst/rootfs || umount -f /tmp/rpi/dst/rootfs
