@@ -67,7 +67,7 @@ mount ${LDST}p2 /tmp/rpi/dst/rootfs
  
  
 # copy raspberry pi rootfs
-rsync -az -H --delete --numeric-ids /tmp/rpi/src/rootfs /tmp/rpi/dst/rootfs
+rsync -az -H --delete --numeric-ids /tmp/rpi/src/rootfs/ /tmp/rpi/dst/rootfs/
  
 ls -la /tmp/rpi/dst/rootfs 
 
