@@ -65,19 +65,18 @@ mount ${LSRC}p2 /tmp/rpi/src/rootfs
 mkdir -p /tmp/rpi/dst/rootfs
 mount ${LDST}p2 /tmp/rpi/dst/rootfs
  
+ 
+# copy raspberry pi rootfs
+rsync -az -H --delete --numeric-ids /tmp/rpi/src/rootfs /tmp/rpi/dst/rootfs
+ 
+ls -la /tmp/rpi/dst/rootfs 
 
-# build rootfs
-DIST=buster
-
-pushd /tmp/rpi/dst
-debootstrap --arch=armhf --variant=minbase --include sysvinit-core,openssh-server,auditd,u-boot-tools,initramfs-tools,gzip,cloud-guest-utils,ufw --foreign $DIST rootfs http://ftp.debian.org/debian
+# config rootfs
 
 # included qemu arm emulator into image (required to chroot into rootfs)
-cp $(which qemu-arm-static) rootfs/usr/bin
+cp $(which qemu-arm-static) /tmp/rpi/dst/rootfs/usr/bin
 
-sed -i -e 's/systemd systemd-sysv //g' rootfs/debootstrap/required
-
-cat <<EOF >>rootfs/etc/apt/apt.conf
+cat <<EOF >>/tmp/rpi/dst/rootfs/etc/apt/apt.conf
 APT::Get::Install-Recommends "false";
 APT::Get::Install-Suggests "false";
 APT::Install-Recommends "false";
@@ -85,52 +84,17 @@ APT::AutoRemove::RecommendsImportant "false";
 APT::AutoRemove::SuggestsImportant "false";
 EOF
 
-cat <<EOF >>rootfs/etc/pam.d/password-auth
+cat <<EOF >>/tmp/rpi/dst/rootfs/etc/pam.d/password-auth
 session     required      pam_tty_audit.so enable=*
 EOF
-cat <<EOF >>rootfs/etc/pam.d/system-auth
+cat <<EOF >>/tmp/rpi/dst/rootfs/etc/pam.d/system-auth
 session     required      pam_tty_audit.so enable=*
 EOF
-cat <<EOF >>rootfs/etc/pam.d/sshd
+cat <<EOF >>/tmp/rpi/dst/rootfs/etc/pam.d/sshd
 session     required      pam_tty_audit.so enable=*
 EOF
 
-# boot scripts started from /etc/rc.local (if files are executable)
-mkdir -p rootfs/etc/boot.d
 
-cat <<EOF > rootfs/etc/boot.d/99_firstboot
-#!/bin/bash
-
-# set hostname to mac address
-if test -e /sys/class/net/eth0/address; then 
- name="rpi-"\$(sed /sys/class/net/eth0/address -e 's/://g')
- echo "\$name" > /etc/hostname
- hostname \$name
- chmod -x \$0
-fi
-
-# enable firewall
-ufw default deny
-ufw allow ssh
-ufw enable
-
-#disable this script
-chmod -x \$0
-#enable readonly
-reboot-ro
-EOF
-chmod +x rootfs/etc/boot.d/99_firstboot
-
-# finish debootstrap
-chroot rootfs debootstrap/debootstrap --second-stage
-
-popd
-#end build rootfs
-
-
-# copy raspberry pi kernel modules
-mkdir -p /tmp/rpi/dst/rootfs/lib/modules
-rsync -az -H --delete --numeric-ids /tmp/rpi/src/rootfs/lib/modules /tmp/rpi/dst/rootfs/lib
 
 
 # copy files from this repository to image
