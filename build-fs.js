@@ -87,18 +87,6 @@ APT::AutoRemove::RecommendsImportant "false";
 APT::AutoRemove::SuggestsImportant "false";
 EOF
 
-cat <<EOF >>/tmp/rpi/dst/rootfs/etc/pam.d/password-auth
-session     required      pam_tty_audit.so enable=*
-EOF
-cat <<EOF >>/tmp/rpi/dst/rootfs/etc/pam.d/system-auth
-session     required      pam_tty_audit.so enable=*
-EOF
-cat <<EOF >>/tmp/rpi/dst/rootfs/etc/pam.d/sshd
-session     required      pam_tty_audit.so enable=*
-EOF
-
-
-
 
 # copy files from this repository to image
 cp -a ${cur}/etc/* /tmp/rpi/dst/rootfs/etc/
