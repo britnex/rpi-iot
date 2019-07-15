@@ -7,7 +7,7 @@ netdev=$(ls -1 /sys/class/net/ | grep "^e")
 if test -e /sys/class/net/${netdev}/address; then 
  name="rpi-"$(sed /sys/class/net/${netdev}/address -e 's/://g')
  echo "$name" > /etc/hostname
- hostname $name
+ hostnamectl set-hostname $name
  sed -i "s/raspberrypi/$name/g" /etc/hosts 
 fi
 
