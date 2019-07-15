@@ -3,8 +3,9 @@ set -x
 set -e
 
 DEBIAN_FRONTEND=noninteractive apt-get update
-DEBIAN_FRONTEND=noninteractive apt-get install -y auditd
+DEBIAN_FRONTEND=noninteractive apt-get install -y rootsh
 DEBIAN_FRONTEND=noninteractive apt-get install -y u-boot-tools cloud-guest-utils ufw initramfs-tools
+
 
 systemctl enable ssh
 
