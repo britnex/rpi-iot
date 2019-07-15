@@ -2,6 +2,8 @@
 set -x
 set -e
 
+
+DEBIAN_FRONTEND=noninteractive apt-get install -y auditd
 DEBIAN_FRONTEND=noninteractive apt-get install -y u-boot-tools cloud-guest-utils ufw
 
 systemctl enable ssh
