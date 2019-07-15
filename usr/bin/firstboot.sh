@@ -14,12 +14,11 @@ ufw default deny
 ufw allow ssh
 ufw enable
 
-#enable readonly 
-echo 7 > /boot/readonly
 
 # disable this service
 systemctl disable firstboot
 systemctl mask firstboot
 
-reboot
+#enable readonly 
+reboot-ro
 exit 0
