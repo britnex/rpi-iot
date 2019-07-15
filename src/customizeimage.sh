@@ -4,7 +4,7 @@ set -e
 
 
 DEBIAN_FRONTEND=noninteractive apt-get install -y auditd
-DEBIAN_FRONTEND=noninteractive apt-get install -y u-boot-tools cloud-guest-utils ufw
+DEBIAN_FRONTEND=noninteractive apt-get install -y u-boot-tools cloud-guest-utils ufw initramfs-tools
 
 systemctl enable ssh
 
